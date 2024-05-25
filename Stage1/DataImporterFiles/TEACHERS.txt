@@ -1,0 +1,10 @@
+600,Kalvin,Kleine,1,55121,1358,1/4/1962
+601,Rickie,Stembridge,2,12927,1504,9/23/1974
+602,Delora,De Paoli,3,38602,1764,2/22/1953
+603,Malvina,Bouts,4,35225,1759,5/12/1983
+604,Tracie,Hopkyns,5,39920,1227,5/4/1954
+605,Maitilde,Renoden,6,75971,917,12/24/1972
+606,Ainsley,Merrydew,7,30226,1880,6/4/1958
+607,Darrell,Lawles,8,27046,870,12/9/1985
+608,Steward,Rubra,9,65288,1959,8/25/1975
+609,Patrica,Morshead,10,48871,1860,12/13/1961

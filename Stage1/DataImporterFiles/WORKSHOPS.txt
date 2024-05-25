@@ -1,0 +1,4 @@
+11,Guitar,200,2,3
+12,Swimming,100,3,15
+13,Gardening,250,1,10
+14,Singing,150,5,2,5
