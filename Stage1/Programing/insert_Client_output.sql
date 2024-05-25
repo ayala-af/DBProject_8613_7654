@@ -1201,3 +1201,4 @@ VALUES (1399, 'Michael', 'Martin', 10, 34819, 207, to_date('25-05-1946', 'dd-mm-
 INSERT INTO Clients (client_ID, client_fname, client_lname, client_addr, client_TEL, client_payment, birthday)
 VALUES (1400, 'Isabella', 'Wilson', 6, 54162, 260, to_date('09-03-1972', 'dd-mm-yyyy'));
 
+
