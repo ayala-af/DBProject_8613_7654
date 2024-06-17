@@ -4,7 +4,7 @@ Version=1
 
 [Preferences]
 Username=
-Password=2582
+Password=2050
 Database=
 DateFormat=
 CommitCount=0
@@ -14,7 +14,7 @@ InitScript=
 [Table]
 Owner=AYALA
 Name=SCHEDULER
-Count=10
+Count=400
 
 [Record]
 Name=SC_TIME
@@ -34,34 +34,34 @@ Master=
 Name=SCHEDULER_ID
 Type=NUMBER
 Size=5
-Data=Sequence(1,1])
+Data=Sequence(11,1)
 Master=
 
 [Record]
 Name=GROUP_ID
 Type=NUMBER
 Size=5
-Data=Sequence(1,1])
+Data=List(select group_id from groups_)
 Master=
 
 [Record]
 Name=WORKSHOP_ID
 Type=NUMBER
 Size=5
-Data=Sequence(1,1])
+Data=List(select workshop_id from workshops)
 Master=
 
 [Record]
 Name=ROOM_ID
 Type=NUMBER
 Size=5
-Data=Random(1,10)
+Data=List(select room_id from rooms)
 Master=
 
 [Record]
 Name=TEACHER_ID
 Type=NUMBER
 Size=5
-Data=Random(1,10)
+Data=List(select teacher_id from teachers)
 Master=
 

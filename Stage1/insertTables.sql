@@ -287,6 +287,13 @@ values (9, 9);
 
 insert into PARTICIPATE (GROUP_ID, CLIENT_ID)
 values (10, 10);
+insert into PARTICIPATE (GROUP_ID, CLIENT_ID)
+values (9, 74);
+insert into PARTICIPATE (GROUP_ID, CLIENT_ID)
+values (9, 10);
+insert into PARTICIPATE (GROUP_ID, CLIENT_ID)
+values (5, 10);
+
 
 commit;
 
