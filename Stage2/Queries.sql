@@ -1,22 +1,23 @@
---all quieres
+--all queries
 
 --DELETE
---dalete1- 
---delete a schedule of a teacher who teach a workshop he doesnt allow to teach
+
+--delete1 
+--delete every schedule of a teacher who teach a workshop he's not allowed to teach
 --shows the problametic schedules
 select scheduler.*  
 from scheduler
 where scheduler.workshop_id not in (
 select teach.workshop_id
 from teach
-where teach.teacher_id=scheduler.teacher_id);
+where teach.teacher_id = scheduler.teacher_id);
 
 -- delete query
 delete from scheduler
 where scheduler.workshop_id not in (
 select teach.workshop_id
 from teach
-where teach.teacher_id=scheduler.teacher_id);
+where teach.teacher_id = scheduler.teacher_id);
 
 
 --delete2
@@ -47,9 +48,12 @@ where (age < minage or age > maxage) and p.client_id = client_ID and p.group_id 
 
 
 --UPDATE
+
 --update1
---update client's payment according to the cost of the worksops he takes (but not according to the number of time he scheduld for the same workshop
---foreach client- shows its calculated payament
+--update each client's payment according to the cost of the workshops they take 
+--(but not according to the number of times they are scheduled for the same workshop)
+
+--foreach client - shows its calculated payment
 SELECT c.client_ID, COALESCE(wp.total_price, 0) AS culculated_total_price,c.client_payment as currnt_payment
 FROM Clients c
 LEFT JOIN (
@@ -87,20 +91,21 @@ SET client_payment = COALESCE((
 
 --update2
 --update teacher salary to the correct number
-SELECT sc.teacher_ID, (t.teacher_fname || ' ' || t.teacher_lname) AS full_name, t.teacher_salary AS current_salary, SUM(w.workshop_price) AS correct_salary
+SELECT sc.teacher_ID, (t.teacher_fname || ' ' || t.teacher_lname) AS full_name, 
+       t.teacher_salary AS current_salary, SUM(w.workshop_price) AS correct_salary
 FROM Scheduler sc
 JOIN Workshops w ON sc.workshop_ID = w.workshop_ID
 JOIN Teachers t ON sc.teacher_id = t.teacher_id
 GROUP BY sc.teacher_ID, t.teacher_fname, t.teacher_lname, t.teacher_salary;
 
 -- update teacher salary to the correct number
-
 CREATE VIEW SalaryUpdate AS (
     SELECT sc.teacher_ID, SUM(w.workshop_price) AS new_salary
     FROM Scheduler sc
     JOIN Workshops w ON sc.workshop_ID = w.workshop_ID
     GROUP BY sc.teacher_ID
 );
+
 --update query
 UPDATE Teachers t
 SET t.teacher_salary = (
@@ -124,48 +129,32 @@ select *
 from teachers
 
 
+
 --SELECT
+
 --select1
 --The workshop with the fewest registrants
---forech workshop shows its num of paticipants
-SELECT DISTINCT 
-    w.WORKSHOP_NAME,
-    g.GROUP_ID,
-    g.AMOUNT
+-- side query: forech workshop shows its number of paticipants
+SELECT DISTINCT w.WORKSHOP_NAME, g.GROUP_ID, g.AMOUNT
 FROM WORKSHOPS w
 JOIN SCHEDULER s ON w.WORKSHOP_ID = s.WORKSHOP_ID  
 JOIN GROUPS_ g ON s.GROUP_ID = g.GROUP_ID
 ORDER BY w.WORKSHOP_NAME, g.GROUP_ID;
 
-SELECT
-    w.WORKSHOP_NAME,
-    COALESCE(SUM(g.AMOUNT), 0) AS total_participants
-FROM
-    WORKSHOPS w
-LEFT JOIN
-    SCHEDULER s ON w.WORKSHOP_ID = s.WORKSHOP_ID
-LEFT JOIN
-    GROUPS_ g ON s.GROUP_ID = g.GROUP_ID
-GROUP BY
-    w.WORKSHOP_NAME
-ORDER BY
-    total_participants DESC;
+SELECT w.WORKSHOP_NAME, COALESCE(SUM(g.AMOUNT), 0) AS total_participants
+FROM WORKSHOPS w
+LEFT JOIN SCHEDULER s ON w.WORKSHOP_ID = s.WORKSHOP_ID
+LEFT JOIN GROUPS_ g ON s.GROUP_ID = g.GROUP_ID
+GROUP BY w.WORKSHOP_NAME
+ORDER BY total_participants DESC;
 
---the workshop whith the least number of participants
-SELECT
-    w.workshop_id,
-    w.WORKSHOP_NAME,
-    COALESCE(SUM(g.AMOUNT), 0) AS total_participants
-FROM
-    WORKSHOPS w
-LEFT JOIN
-    SCHEDULER s ON w.WORKSHOP_ID = s.WORKSHOP_ID
-LEFT JOIN
-    GROUPS_ g ON s.GROUP_ID = g.GROUP_ID
-GROUP BY
-    w.WORKSHOP_NAME, w.workshop_id
-HAVING
-    COALESCE(SUM(g.AMOUNT), 0) = (
+-- the workshop with the least number of participants
+SELECT w.workshop_id, w.WORKSHOP_NAME, COALESCE(SUM(g.AMOUNT), 0) AS total_participants
+FROM WORKSHOPS w
+LEFT JOIN SCHEDULER s ON w.WORKSHOP_ID = s.WORKSHOP_ID
+LEFT JOIN GROUPS_ g ON s.GROUP_ID = g.GROUP_ID
+GROUP BY w.WORKSHOP_NAME, w.workshop_id
+HAVING  COALESCE(SUM(g.AMOUNT), 0) = (
         SELECT COALESCE(MIN(total_participants), 0)
         FROM (
             SELECT COALESCE(SUM(g.AMOUNT), 0) AS total_participants
@@ -175,12 +164,11 @@ HAVING
             GROUP BY w.WORKSHOP_NAME
         )
     )
-ORDER BY
-    total_participants DESC;
+ORDER BY total_participants DESC;
       
       
     
---select2
+-- select2
 -- select teacher(s) who teaches the most clients
 
 WITH ClientCounts AS (
@@ -199,43 +187,29 @@ WHERE num_clients = (SELECT MAX(num_clients) FROM ClientCounts);
 
 
 
+-- select3
+-- foreach workshop - returns the number of students for each teacher for each workshop
 
-
---select3
---forech workshop- returns the NUM of student for each techer in ech workshop
-
---all scheduls
+-- all schedules
 select *   
 from scheduler  natural join groups_ 
 order by teacher_id,
 workshop_ID;
 
---swlwct query
-SELECT 
-    T.teacher_ID, 
-    T.teacher_fname, 
-    T.teacher_lname, 
-    W.workshop_ID, 
-    W.workshop_name, 
-        COALESCE(SUM(G.amount), 0) AS num_students
-FROM 
-    Teachers T
-LEFT JOIN 
-    Scheduler S ON T.teacher_ID = S.teacher_ID 
-LEFT JOIN 
-    Workshops W ON S.workshop_ID = W.workshop_ID
-LEFT JOIN 
-    Groups_ G ON S.group_ID = G.group_ID
-GROUP BY 
-    T.teacher_ID, 
-    T.teacher_fname, 
-    T.teacher_lname, 
-    W.workshop_ID, 
-    W.workshop_name
-ORDER BY 
-T.teacher_ID,
-W.workshop_ID;
---select4
+-- select query
+SELECT T.teacher_ID, T.teacher_fname, T.teacher_lname, W.workshop_ID, 
+       W.workshop_name, COALESCE(SUM(G.amount), 0) AS num_students
+FROM Teachers T
+LEFT JOIN Scheduler S ON T.teacher_ID = S.teacher_ID 
+LEFT JOIN Workshops W ON S.workshop_ID = W.workshop_ID
+LEFT JOIN Groups_ G ON S.group_ID = G.group_ID
+GROUP BY T.teacher_ID, T.teacher_fname, T.teacher_lname, 
+      W.workshop_ID, W.workshop_name
+ORDER BY T.teacher_ID, W.workshop_ID;
+
+
+
+-- select4
 -- select the teacher(s) who gets above average with in the other teachers of each workshop 
 
 WITH WorkshopAvgSalary AS (
@@ -245,7 +219,8 @@ WITH WorkshopAvgSalary AS (
     GROUP BY te.workshop_ID
 )
 
-SELECT te.workshop_ID, w.workshop_name, was.avg_salary, t.teacher_id, t.teacher_fname, t.teacher_lname, t.teacher_salary
+SELECT te.workshop_ID, w.workshop_name, was.avg_salary, t.teacher_id,
+       t.teacher_fname, t.teacher_lname, t.teacher_salary
 FROM Teach te                                                      -- each workshop and its teachers 
 JOIN Workshops w ON te.workshop_id = w.workshop_id                 -- for workshop name   
 JOIN WorkshopAvgSalary was ON te.workshop_id = was.workshop_ID     -- for workshop avg salary
